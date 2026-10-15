@@ -1,0 +1,1055 @@
+{
+ "components": {
+  "schemas": {
+   "EmployeeCreate": {
+    "properties": {
+     "department": {
+      "maxLength": 50,
+      "minLength": 1,
+      "title": "Department",
+      "type": "string"
+     },
+     "email": {
+      "maxLength": 120,
+      "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+      "title": "Email",
+      "type": "string"
+     },
+     "emp_code": {
+      "pattern": "^EMP\\d{4,6}$",
+      "title": "Emp Code",
+      "type": "string"
+     },
+     "joined_on": {
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "title": "Joined On",
+      "type": "string"
+     },
+     "name": {
+      "maxLength": 100,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+     },
+     "shift_end": {
+      "default": "18:30",
+      "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+      "title": "Shift End",
+      "type": "string"
+     },
+     "shift_start": {
+      "default": "09:30",
+      "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+      "title": "Shift Start",
+      "type": "string"
+     }
+    },
+    "required": [
+     "emp_code",
+     "name",
+     "email",
+     "department",
+     "joined_on"
+    ],
+    "title": "EmployeeCreate",
+    "type": "object"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "title": "Detail",
+      "type": "array"
+     }
+    },
+    "title": "HTTPValidationError",
+    "type": "object"
+   },
+   "PunchInRequest": {
+    "properties": {
+     "emp_code": {
+      "title": "Emp Code",
+      "type": "string"
+     },
+     "punched_at": {
+      "anyOf": [
+       {
+        "maximum": 4102444800000.0,
+        "minimum": 100000000000.0,
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Punched At"
+     },
+     "status": {
+      "default": "PRESENT",
+      "enum": [
+       "PRESENT",
+       "WFH",
+       "ON_DUTY"
+      ],
+      "title": "Status",
+      "type": "string"
+     }
+    },
+    "required": [
+     "emp_code"
+    ],
+    "title": "PunchInRequest",
+    "type": "object"
+   },
+   "PunchOutRequest": {
+    "properties": {
+     "emp_code": {
+      "title": "Emp Code",
+      "type": "string"
+     },
+     "punched_at": {
+      "anyOf": [
+       {
+        "maximum": 4102444800000.0,
+        "minimum": 100000000000.0,
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Punched At"
+     }
+    },
+    "required": [
+     "emp_code"
+    ],
+    "title": "PunchOutRequest",
+    "type": "object"
+   },
+   "RegularizeRequest": {
+    "properties": {
+     "punch_in": {
+      "anyOf": [
+       {
+        "maximum": 4102444800000.0,
+        "minimum": 100000000000.0,
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Punch In"
+     },
+     "punch_out": {
+      "anyOf": [
+       {
+        "maximum": 4102444800000.0,
+        "minimum": 100000000000.0,
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Punch Out"
+     },
+     "reason": {
+      "maxLength": 200,
+      "minLength": 5,
+      "title": "Reason",
+      "type": "string"
+     },
+     "regularized_by": {
+      "maxLength": 50,
+      "minLength": 1,
+      "title": "Regularized By",
+      "type": "string"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "enum": [
+         "PRESENT",
+         "WFH",
+         "ON_DUTY",
+         "ABSENT",
+         "LEAVE"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status"
+     }
+    },
+    "required": [
+     "reason",
+     "regularized_by"
+    ],
+    "title": "RegularizeRequest",
+    "type": "object"
+   },
+   "ValidationError": {
+    "properties": {
+     "ctx": {
+      "title": "Context",
+      "type": "object"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "title": "Location",
+      "type": "array"
+     },
+     "msg": {
+      "title": "Message",
+      "type": "string"
+     },
+     "type": {
+      "title": "Error Type",
+      "type": "string"
+     }
+    },
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError",
+    "type": "object"
+   }
+  }
+ },
+ "paths": {
+  "/admin/explain/{endpoint}": {
+   "get": {
+    "operationId": "explain_endpoint_admin_explain__endpoint__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "endpoint",
+      "required": true,
+      "schema": {
+       "enum": [
+        "attendance_list",
+        "employee_monthly",
+        "department_summary",
+        "late_leaderboard",
+        "department_trend"
+       ],
+       "title": "Endpoint",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "emp_code",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Emp Code"
+      }
+     },
+     {
+      "in": "query",
+      "name": "month",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Month"
+      }
+     },
+     {
+      "in": "query",
+      "name": "department",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Department"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 10,
+       "maximum": 50,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_from",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Date From"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_to",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Date To"
+      }
+     },
+     {
+      "in": "query",
+      "name": "status",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "PRESENT",
+          "WFH",
+          "ON_DUTY",
+          "ABSENT",
+          "LEAVE"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "in": "query",
+      "name": "from",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "From"
+      }
+     },
+     {
+      "in": "query",
+      "name": "to",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "To"
+      }
+     },
+     {
+      "in": "query",
+      "name": "page",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "minimum": 1,
+       "title": "Page",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "page_size",
+      "required": false,
+      "schema": {
+       "default": 20,
+       "maximum": 100,
+       "minimum": 1,
+       "title": "Page Size",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Explain Endpoint"
+   }
+  },
+  "/analytics/departments/summary": {
+   "get": {
+    "operationId": "department_summary_analytics_departments_summary_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "month",
+      "required": true,
+      "schema": {
+       "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+       "title": "Month",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "department",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Department"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Department Summary"
+   }
+  },
+  "/analytics/departments/{department}/trend": {
+   "get": {
+    "operationId": "department_trend_analytics_departments__department__trend_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "department",
+      "required": true,
+      "schema": {
+       "title": "Department",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "from",
+      "required": true,
+      "schema": {
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "title": "From",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "to",
+      "required": true,
+      "schema": {
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "title": "To",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Department Trend"
+   }
+  },
+  "/analytics/employees/{emp_code}/monthly": {
+   "get": {
+    "operationId": "employee_monthly_analytics_employees__emp_code__monthly_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "emp_code",
+      "required": true,
+      "schema": {
+       "title": "Emp Code",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "month",
+      "required": true,
+      "schema": {
+       "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+       "title": "Month",
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Employee Monthly"
+   }
+  },
+  "/analytics/leaderboard/late": {
+   "get": {
+    "operationId": "late_leaderboard_analytics_leaderboard_late_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "month",
+      "required": true,
+      "schema": {
+       "pattern": "^\\d{4}-(0[1-9]|1[0-2])$",
+       "title": "Month",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 10,
+       "maximum": 50,
+       "minimum": 1,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "department",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Department"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Late Leaderboard"
+   }
+  },
+  "/attendance": {
+   "get": {
+    "operationId": "list_attendance_attendance_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "emp_code",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Emp Code"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_from",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Date From"
+      }
+     },
+     {
+      "in": "query",
+      "name": "date_to",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Date To"
+      }
+     },
+     {
+      "in": "query",
+      "name": "status",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "enum": [
+          "PRESENT",
+          "WFH",
+          "ON_DUTY",
+          "ABSENT",
+          "LEAVE"
+         ],
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "in": "query",
+      "name": "page",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "minimum": 1,
+       "title": "Page",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "page_size",
+      "required": false,
+      "schema": {
+       "default": 20,
+       "maximum": 100,
+       "minimum": 1,
+       "title": "Page Size",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Attendance"
+   }
+  },
+  "/attendance/punch-in": {
+   "post": {
+    "operationId": "punch_in_attendance_punch_in_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PunchInRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Punch In"
+   }
+  },
+  "/attendance/punch-out": {
+   "post": {
+    "operationId": "punch_out_attendance_punch_out_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PunchOutRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Punch Out"
+   }
+  },
+  "/attendance/{emp_code}/{date}": {
+   "patch": {
+    "operationId": "regularize_attendance__emp_code___date__patch",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "emp_code",
+      "required": true,
+      "schema": {
+       "title": "Emp Code",
+       "type": "string"
+      }
+     },
+     {
+      "in": "path",
+      "name": "date",
+      "required": true,
+      "schema": {
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "title": "Date",
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RegularizeRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Regularize"
+   }
+  },
+  "/employees": {
+   "get": {
+    "operationId": "list_employees_employees_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "department",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Department"
+      }
+     },
+     {
+      "in": "query",
+      "name": "page",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "minimum": 1,
+       "title": "Page",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "page_size",
+      "required": false,
+      "schema": {
+       "default": 20,
+       "maximum": 100,
+       "minimum": 1,
+       "title": "Page Size",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Employees"
+   },
+   "post": {
+    "operationId": "create_employee_employees_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EmployeeCreate"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Employee"
+   }
+  },
+  "/health": {
+   "get": {
+    "operationId": "health_health_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Health"
+   }
+  }
+ }
+}

@@ -1,0 +1,4 @@
+-r requirements.txt
+pytest>=8
+httpx>=0.27
+mongomock>=4.1   # optional: weak stand-in when no MongoDB is available (USE_MONGOMOCK=1)
